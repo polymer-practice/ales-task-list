@@ -1,8 +1,9 @@
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../task-element/task-element.hmtl">
+<link rel="import" href="../task-element/task-element.html">
 
 
 <dom-module id="task-list">
+
   <template is="dom-repeat" items="[[tasks]]">
     <style>
       :host {
@@ -10,9 +11,15 @@
         color: black;
       }
     </style>
-    
-   <task-element></task-element>
-    
+    <ul>
+      <template is="dom-repeat" items="[[tasks]]" sort="sortTasks">
+        <task-element task-id="[[item.id]]" is-done="[[item.isDone]]" is-cancelled="[[item.isCancelled]]"
+        item-title="[[item.title]]"></task-element>
+      </template>
+    </ul>
+
+
+
   </template>
 
   <script>
@@ -29,33 +36,18 @@
       static get properties() {
         return {
           tasks: {
-            type: Array,
-            value: ()=> {
-              return [
-                {
-                  id: 1,
-                  title: "Tarea 1",
-                  canceled: false,
-                  done: false
-                },
-                {
-                  id: 2,
-                  title: "Tarea 2",
-                  canceled: false,
-                  done: false
-                },
-                {
-                  id: 3,
-                  title: "Tarea 3",
-                  canceled: false,
-                  done: false
-                }
-              ]
-            }
+            type: Array
           }
-        };
+        }
+      };
+      sortTasks(prevTask, currentTask){
+        let prev = prevTask.isCancelled + (prevTask.isDone * 2);
+        let current = currentTask.isCancelled + (currentTask.isDone * 2)
+        return prev - current;
+
       }
     }
+    
 
     window.customElements.define(TaskList.is, TaskList);
   </script>
