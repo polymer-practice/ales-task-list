@@ -77,7 +77,7 @@
       filterSearch(value) {
         return function (item) {
           console.log(item.title)
-          return item.title.indexOf(value > 0);
+          return item.title.indexOf(value) > -1;
         }
       }
 
