@@ -4,17 +4,27 @@
 
 <dom-module id="task-list">
 
-  <template is="dom-repeat" items="[[tasks]]">
+  <template is="dom-repeat" items="[[tasks]]" filter="">
     <style>
       :host {
         display: block;
         color: black;
       }
+
+      .search-bar {
+        width: 100%;
+      }
     </style>
+    <div class="search-wrapper">
+      <form class="task-form" on-submit="onSubmit">
+        <input class="search-bar" type="text" value="{{_searchValue::input}}" />
+        <button type="submit" class="task-button">Buscar</button>
+      </form>
+    </div>
     <ul>
-      <template is="dom-repeat" items="[[tasks]]" sort="sortTasks">
+      <template is="dom-repeat" items="[[tasks]]" sort="sortTasks" filter="{{filterSearch(_searchValue)}}">
         <task-element task-id="[[item.id]]" is-done="[[item.isDone]]" is-cancelled="[[item.isCancelled]]"
-        item-title="[[item.title]]"></task-element>
+          item-title="[[item.title]]"></task-element>
       </template>
     </ul>
 
@@ -37,17 +47,45 @@
         return {
           tasks: {
             type: Array
+          },
+          _searchValue: {
+            type: String
           }
         }
       };
-      sortTasks(prevTask, currentTask){
+
+      /**************************** Sort *******************************/
+      sortTasks(currentTask, prevTask) {
         let prev = prevTask.isCancelled + (prevTask.isDone * 2);
         let current = currentTask.isCancelled + (currentTask.isDone * 2)
-        return prev - current;
+        return current - prev;
+      }
+
+      /**************************** Search *******************************/
+      onSubmit() {
+        let event = new CustomEvent('search-task',
+          {
+            bubbles: true,
+            composed: false,
+            detail: {
+              externalinfo: this._searchValue
+            }
+          })
+        this.dispatchEvent(event)
+      }
+
+      filterSearch(value) {
+        return function (item) {
+          return item.title.indexOf(value > -1);
+        }
+      }
+
+      search() {
 
       }
+
     }
-    
+
 
     window.customElements.define(TaskList.is, TaskList);
   </script>
